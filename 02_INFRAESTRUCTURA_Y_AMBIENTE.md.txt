@@ -1,0 +1,51 @@
+# Infraestructura y Ambiente de Desarrollo
+
+## Producción (YA EXISTE – NO CONFIGURAR)
+- SO: Ubuntu Server 22.04 LTS
+- Web: Nginx + PHP-FPM 8.4
+- Framework: Laravel instalado y operativo
+- Base de Datos: PostgreSQL 14
+
+### PostgreSQL – Cluster Analítica
+- Cluster: 14/analitica
+- Puerto: 5433
+- Base de datos: analitica
+- Usuario: analitica_app
+
+⚠️ Existe otro cluster 14/main (5432) y OpenProject en :8090  
+→ **NO TOCAR**
+
+---
+
+## Ambiente Local (para desarrollo)
+
+Se debe crear un **ambiente local equivalente**, preferentemente con **Docker Compose**, que incluya:
+
+- PHP 8.4
+- Nginx
+- PostgreSQL 14
+- (Opcional) Redis para colas futuras
+
+Laravel debe correr localmente y conectarse a una BD PostgreSQL local llamada `analitica`.
+
+---
+
+## Principios Operativos
+
+- No usar credenciales productivas
+- Usar `.env.example`
+- Migraciones reproducibles
+- El deploy a Ubuntu lo realizará el responsable del servidor
+
+---
+
+## Rol de Laravel en la arquitectura
+
+Laravel se encarga de:
+- Ingesta de archivos
+- Control de estructura y reglas
+- Auditoría y trazabilidad
+- Orquestación de Jobs (colas)
+- Gestión de usuarios y permisos
+
+Power BI se conecta **directamente a PostgreSQL** mediante **views SQL**.

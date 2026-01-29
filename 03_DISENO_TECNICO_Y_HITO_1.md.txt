@@ -1,0 +1,179 @@
+# Diseño Técnico – Hito 1 Finanzas (Ejecución Presupuestaria)
+
+## Autenticación y Roles
+
+- Login vía Google OAuth (Laravel Socialite)
+- Dominio permitido inicial: saludaysen.cl
+- El dominio debe ser configurable en BD (no hardcodeado)
+
+### Roles
+- Admin: configura datasets, versiones, usuarios y dominios
+- Editor: sube archivos y revisa errores
+- Visor: solo lectura
+
+---
+
+## Concepto Central: Dataset Versionado
+
+Todo el sistema gira en torno a **Datasets**.
+
+Un Dataset define:
+- Tipo de información (ej: fin_ejecucion)
+- Columnas esperadas (canonical names)
+- Columnas obligatorias
+- Tipos de datos
+- Aliases permitidos
+- Reglas de normalización
+- Versiones de plantilla (v1, v2…)
+
+El usuario **elige el dataset** al subir el archivo (sin autodetección).
+
+---
+
+## Dataset a Implementar: `fin_ejecucion` (v1)
+
+### Fuente real del archivo
+Excel mensual institucional con estructura:
+
+1. Filas iniciales descriptivas (título, periodo, servicio) → IGNORAR
+2. Fila con encabezados reales → DETECTAR
+3. Filas de datos
+4. Fila(s) de TOTALES al final → IGNORAR
+
+⚠️ **NO pedir archivos “limpios” al usuario**  
+El ETL debe manejar este formato automáticamente.
+
+---
+
+## Reglas de Ingesta (críticas)
+
+### Detección de encabezados
+- Buscar la primera fila que contenga un conjunto mínimo de columnas esperadas
+- Usar aliases (ej: “Subtítulo”, “Item”, “Devengado”)
+
+### Ignorar filas
+- Filas antes del header
+- Filas vacías
+- Filas con texto “TOTAL”
+- Filas sin valores numéricos en columnas clave
+
+### Mes y Año
+- El archivo representa un mes completo
+- El usuario debe seleccionar **Mes y Año** al subir el archivo
+
+---
+
+## Modelo de Datos
+
+### Tablas CORE (genéricas)
+- datasets
+- dataset_versions
+- dataset_columns
+- dataset_column_aliases
+- import_runs
+- import_errors
+
+### Staging
+**stg_fin_ejecucion**
+- id
+- import_run_id
+- row_number
+- payload_raw (jsonb)
+- payload_parsed (jsonb)
+- is_valid (bool)
+- errors (jsonb)
+
+### Tabla Final
+**fin_ejecucion_fact**
+- anio (int) ✅
+- mes (int) ✅
+- subtitulo (text) ✅
+- item (text) ✅
+- asignacion (text nullable)
+- concepto (text nullable)
+- presupuesto_vigente (numeric nullable)
+- compromiso (numeric nullable)
+- devengado (numeric) ✅
+- pagado (numeric nullable)
+- saldo (numeric nullable)
+- fuente (text, default 'ejecucion_presupuestaria')
+- import_run_id (FK)
+
+UNIQUE:
+(anio, mes, subtitulo, item, asignacion, fuente)
+
+---
+
+## Validaciones y Normalización
+
+### Validaciones mínimas
+- subtitulo obligatorio
+- item obligatorio
+- devengado obligatorio y numérico
+- mes y año presentes
+
+### Normalización
+- Montos con puntos/comas → numeric
+- Paréntesis como negativos
+- Trim de strings
+- Estandarización básica de texto
+
+Errores deben registrarse por:
+- fila
+- columna (si aplica)
+- código + mensaje + valor original
+
+---
+
+## Procesamiento Asíncrono (OBLIGATORIO)
+
+No procesar archivos en requests web.
+
+### Jobs requeridos
+1. **StageImportJob**
+   - Leer archivo
+   - Detectar header
+   - Mapear columnas por alias
+   - Insertar en staging
+
+2. **ValidateNormalizeJob**
+   - Validar y normalizar
+   - Marcar filas válidas / inválidas
+   - Registrar errores
+
+3. **UpsertFinalJob**
+   - Upsert desde staging válido
+   - Actualizar métricas de import_run
+
+Colas:
+- Inicialmente `database`
+- Preparado para Redis/Supervisor
+
+---
+
+## UI Mínima (Laravel)
+
+No implementar dashboards BI.
+
+Pantallas necesarias:
+- Subir archivo (dataset + versión + mes/año)
+- Listado de importaciones
+- Detalle de importación con errores
+- Exportar errores a CSV
+
+---
+
+## Views SQL (Entregable Final del Hito 1)
+
+Crear en PostgreSQL:
+
+- vw_fin_ejecucion_mes_subtitulo  
+  SUM(devengado) por año/mes/subtitulo
+
+- vw_fin_ejecucion_acum_subtitulo  
+  Acumulado usando window functions
+
+- vw_fin_top_items_mes  
+  Ranking de ítems por gasto mensual
+
+Estas views serán consumidas por Power BI.

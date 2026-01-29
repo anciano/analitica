@@ -1,0 +1,199 @@
+Design System
+
+Base visual: Sing App Vue.js Dashboard (Flatlogic)
+Todo lo visual debe estar en español
+
+1. Identidad general
+
+Tipo de producto: Dashboard analítico / SaaS interno
+
+Sensación: Profesional, liviano, “enterprise moderno”
+
+Contraste: Bajo–medio (no oscuro agresivo, no blanco puro)
+
+Prioridad: Lectura de datos + claridad jerárquica
+
+👉 Regla madre: primero legibilidad, luego estética.
+
+2. Tipografía (confirmada por el estilo visual)
+Fuente principal
+
+Inter
+Fallbacks:
+
+font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+Jerarquía
+Uso	Tamaño	Peso
+Page title (Analytics)	22–24px	600
+Card title	14–15px	600
+KPI principal	26–30px	600
+Texto base	13–14px	400
+Labels / helper	12px	400
+
+📌 Coincide con lo que se ve en “Visits Today”, “Revenue Breakdown”, etc. 
+
+Sing App Vue.js Dashboard - Vue…
+
+3. Paleta de colores (extraída visualmente)
+Base / layout
+--bg-app: #F5F7FA;
+--bg-surface: #FFFFFF;
+--border-soft: #E6ECF2;
+
+--text-main: #1F2937;
+--text-muted: #6B7280;
+
+Sidebar (oscuro azulado)
+--sidebar-bg: #0E1628;
+--sidebar-icon: #9AA4BF;
+--sidebar-active: #3B82F6;
+
+Colores semánticos (charts y KPIs)
+--primary-blue: #4F8DF5;   /* línea azul */
+--primary-cyan: #4FD1C5;  /* línea turquesa */
+--primary-yellow: #F6C85F;/* donut amarillo */
+--primary-red: #F87171;   /* donut rojo */
+
+--success: #22C55E;
+--warning: #F59E0B;
+--danger: #EF4444;
+
+
+👉 Estos colores se ven claramente en:
+
+Donut de Revenue Breakdown
+
+Líneas del Daily Line Chart
+
+KPIs con flechas verdes/rojas
+
+
+Sing App Vue.js Dashboard - Vue…
+
+4. Componentes (reglas obligatorias)
+Cards
+
+Fondo blanco
+
+Borde muy sutil
+
+Shadow leve (casi imperceptible)
+
+Radius: 10–12px
+
+Padding: 16–20px
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+}
+
+KPIs
+
+Número grande
+
+Delta pequeño debajo
+
+Flecha verde/roja según tendencia
+
+Charts
+
+Sin grid pesado
+
+Líneas suaves
+
+Tooltip limpio
+
+Colores sólidos, no chillones
+
+5. Layout (estructura fija)
+
+Sidebar izquierda fija, íconos lineales
+
+Top breadcrumb (“You are here > App > Main > Analytics”)
+
+Grid de cards (2–3 columnas)
+
+Scroll vertical solo en contenido
+
+📌 Esto es exactamente el flujo visual del PDF 
+
+Sing App Vue.js Dashboard - Vue…
+
+6. Iconografía
+
+Íconos lineales (stroke)
+
+Tamaño pequeño–medio
+
+Nunca rellenos
+
+Recomendado:
+
+lucide
+
+tabler-icons
+
+7. Prompt maestro DEFINITIVO para Antigravity
+
+Pégalo tal cual y no lo vuelvas a reexplicar:
+
+A partir de ahora, Antigravity debe usar SIEMPRE este Design System como fuente única de verdad.
+
+BASE VISUAL
+Dashboard estilo “Sing App Vue.js” (Flatlogic): sidebar oscuro + cards blancas + UI liviana + charts limpios.
+
+TIPOGRAFÍA
+Inter (fallback system-ui, Segoe UI, Roboto).
+
+COLORES
+--bg-app:#F5F7FA
+--bg-surface:#FFFFFF
+--border-soft:#E6ECF2
+--text-main:#1F2937
+--text-muted:#6B7280
+
+--sidebar-bg:#0E1628
+--sidebar-icon:#9AA4BF
+--sidebar-active:#3B82F6
+
+--primary-blue:#4F8DF5
+--primary-cyan:#4FD1C5
+--primary-yellow:#F6C85F
+--primary-red:#F87171
+--success:#22C55E
+--warning:#F59E0B
+--danger:#EF4444
+
+REGLAS
+- Cards blancas, radius 12px, sombra suave.
+- Sidebar oscuro fijo.
+- UI densa pero legible.
+- Charts sin grid pesado.
+- No inventar colores fuera del sistema.
+
+STACK
+Vue 3 + Composition API.
+Tailwind si existe; si no, CSS scoped con variables.
+
+Cualquier pantalla nueva debe parecer parte nativa del mismo dashboard.
+
+Siguiente paso recomendado (muy importante)
+
+Si quieres que esto no se rompa nunca, lo ideal es:
+
+crear un archivo theme.css
+
+y un AppLayout.vue base
+
+Si quieres, en el próximo mensaje te genero:
+
+theme.css
+
+AppLayout.vue
+
+DashboardCard.vue
+
+KpiTile.vue

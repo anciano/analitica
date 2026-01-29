@@ -1,0 +1,37 @@
+# Plataforma Analítica Hospitalaria – Laravel
+## Contexto y Objetivo General
+
+### Objetivo
+Desarrollar una plataforma analítica hospitalaria basada en **Laravel**, cuyo rol principal es:
+
+- Ingesta (ETL) de archivos Excel/CSV institucionales
+- Validación, normalización y trazabilidad de datos
+- Persistencia estructurada en PostgreSQL
+- Exposición de datos limpios para **Power BI** (principal consumidor)
+
+Laravel **NO es un sistema BI**.  
+Laravel actúa como **ETL + control + auditoría**.
+
+---
+
+## Alcance Inicial (Hito 1)
+Implementar el primer dataset productivo:
+
+**Finanzas – Ejecución Presupuestaria (Gastos ejecutados mensuales)**
+
+Este dataset permitirá:
+- Cargar gastos mensuales desde Excel
+- Validar estructura y datos
+- Almacenar información agregable
+- Entregar vistas SQL para Power BI
+
+---
+
+## Roadmap (no implementar ahora, solo considerar diseño)
+
+- ETAPA 1 (actual): Gastos ejecutados
+- ETAPA 2: Proyección fin de año y alertas
+- ETAPA 3: Programación financiera (Plan vs Real)
+- ETAPA 4: GRD / REM / COMGES
+
+El diseño debe permitir agregar nuevos datasets sin rediseñar el sistema.

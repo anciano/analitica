@@ -1,0 +1,95 @@
+Vistas internas de Gastos – Preview y Control (Laravel)
+Objetivo de esta etapa
+
+Antes de integrar Power BI, implementar vistas internas simples en Laravel para:
+Verificar que los datos cargados están correctos
+Mostrar ejemplos reales de análisis a Subdirección
+Facilitar control y auditoría de las cargas
+Laravel NO debe transformarse en BI completo.
+Estas vistas son demostrativas y de control, no el producto final.
+
+Priorizar claridad, números clave y tablas pequeñas
+
+Roles con acceso
+
+Admin / Editor: acceso completo
+
+Visor / Subdirector: solo lectura (resumen y tendencia)
+
+Vistas internas a implementar (mínimo viable)
+1️⃣ Vista: Resumen mensual de gastos
+
+Ruta sugerida: /finanzas/resumen
+
+Filtros
+
+Mes / Año (por defecto: último mes disponible)
+
+Indicadores (cards)
+
+Devengado del mes
+
+Devengado acumulado YTD
+
+Variación vs mes anterior (% y $)
+
+Proyección anual simple (run-rate)
+
+Tablas
+
+Top 5 subtítulos por gasto del mes
+
+Top 10 ítems por gasto del mes
+(subtítulo – ítem – asignación – monto)
+
+
+2️⃣ Vista: Tendencia de gasto
+
+Ruta sugerida: /finanzas/tendencia
+
+Contenido
+
+Tabla (o gráfico simple) con:
+
+Mes
+
+Devengado mensual
+
+Variación vs mes anterior (MoM)
+
+Alcance
+
+Últimos 12 meses (si existen)
+
+
+Reglas visuales simples (UX)
+
+Números grandes arriba, tablas abajo
+
+Colores para:
+
+Variación positiva / negativa
+
+Estados (OK / Error)
+
+
+
+Entregables esperados
+
+Controladores y rutas Laravel
+
+Blade views simples (cards + tablas)
+
+Consultas basadas en views
+
+Control de acceso por rol
+
+Código limpio y desacoplado del BI final
+
+Estas vistas existen para:
+
+Mostrar “cómo van los datos”
+
+Validar el pipeline ETL
+
+Dar confianza a Subdirección

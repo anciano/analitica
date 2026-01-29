@@ -1,0 +1,139 @@
+Dashboard Principal – Resumen de Gastos Relevantes (Laravel)
+
+Resultado esperado
+Una pantalla principal clara y ejecutiva, que permita a un Subdirector responder rápidamente:
+
+“¿Cómo va el gasto este mes, dónde está el riesgo y qué lo explica?”
+
+Contexto
+Existe una plataforma analítica hospitalaria desarrollada en Laravel que ya cuenta con datos de gastos financieros ejecutados cargados en PostgreSQL mediante un ETL.
+La visualización principal final será Power BI, pero antes se requiere un dashboard interno en la web (Laravel) para:
+
+Mostrar un resumen ejecutivo del estado del gasto
+
+Dar ejemplos claros de análisis a Subdirección
+
+Validar que los datos están correctos
+
+Servir como punto de entrada al sistema
+
+⚠️ Laravel NO debe convertirse en un BI completo.
+Este dashboard es resumen + control, no análisis profundo.
+
+Objetivo de esta tarea
+
+Implementar el Dashboard Principal (Home) en Laravel con un snapshot ejecutivo de gastos relevantes, orientado a toma de decisiones administrativas.
+
+Principios obligatorios
+
+Usar views SQL en PostgreSQL como fuente de datos (no lógica analítica en Eloquent).
+
+Mostrar pocos indicadores clave, no tablas largas.
+
+Priorizar riesgo, tendencia y explicación del gasto, no detalle contable.
+
+Diseño simple, rápido de leer (30 segundos).
+
+Contenido del Dashboard Principal
+1️⃣ Encabezado de contexto
+
+Mes/Año visualizado (por defecto: último mes disponible)
+
+Fecha y estado de la última carga (OK / con errores)
+
+2️⃣ Cards KPI (4–6 tarjetas)
+
+Implementar cards con:
+
+Devengado del mes
+
+Devengado acumulado YTD
+
+Variación vs mes anterior (MoM)
+
+monto
+
+porcentaje
+
+Promedio últimos 3 meses
+
+Proyección fin de año (run-rate)
+
+cálculo simple: (YTD / meses_con_dato) * 12
+
+(Opcional si existe el dato) % ejecución vs presupuesto
+
+3️⃣ Tabla “Lo que requiere atención” (Semáforo)
+
+Tabla corta (máx. 5 filas) con:
+
+Subtítulo / Ítem
+
+Devengado del mes
+
+Ratio de aceleración
+
+devengado_mes / promedio_3_meses
+
+Variación MoM (%)
+
+Estado visual:
+
+🟢 normal
+
+🟠 alerta
+
+🔴 crítico
+
+Reglas sugeridas
+
+🔴 ratio > 1.25 o variación MoM > 30%
+
+🟠 ratio entre 1.10 y 1.25
+
+🟢 resto
+
+4️⃣ Rankings explicativos
+
+Mostrar dos tablas pequeñas:
+
+Top 5 subtítulos por gasto del mes
+
+Top 10 ítems por gasto del mes
+(Subtítulo – Ítem – Asignación – Monto)
+
+5️⃣ Navegación (acciones)
+
+Botones/enlaces a:
+
+Tendencia de gasto (12 meses)
+
+Detalle por subtítulo
+
+Control de importaciones / errores
+
+Fuente de datos (OBLIGATORIO)
+
+El dashboard debe consumir exclusivamente views SQL en PostgreSQL, por ejemplo:
+
+vw_kpi_gastos_mes
+
+vw_top_subtitulos_mes
+
+vw_top_items_mes
+
+vw_alertas_aceleracion
+
+(Si no existen aún, deben crearse como parte de la solución.)
+
+Alcance técnico esperado
+
+Rutas y controlador para el dashboard home
+
+Blade view con cards + tablas simples
+
+Consultas a views SQL
+
+Control de acceso por rol (Admin / Editor / Visor)
+
+Código limpio y desacoplado del BI final
