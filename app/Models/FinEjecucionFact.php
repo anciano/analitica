@@ -22,5 +22,18 @@ class FinEjecucionFact extends Model
         'saldo',
         'fuente',
         'import_run_id',
+        'nivel',
+        'codigo_completo',
+        'requerimiento',
+        'deuda_flotante',
+        'saldo_por_aplicar',
+        'saldo_por_devengar',
+        'row_number',
+        'centro_costo_id',
     ];
+
+    public function centroCosto()
+    {
+        return $this->belongsTo(FinCentroCosto::class, 'centro_costo_id');
+    }
 }

@@ -305,15 +305,15 @@
         </div>
     </div>
 
-    <!-- Hierarchy Logic -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Hierarchy & Ranking -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
 
         <!-- Nivel 1: Subtítulos -->
         <div class="col-span-1">
-            <div class="sing-card p-0">
+            <div class="sing-card p-0 h-full">
                 <div class="p-5 border-b border-gray-100">
                     <h2 style="font-size: 16px; font-weight: 600;">Nivel 1: Subtítulos</h2>
-                    <p style="font-size: 13px; color: var(--text-muted);">Agrupación general de gastos</p>
+                    <p style="font-size: 13px; color: var(--text-muted);">Gasto agrupado por subtítulo</p>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="sing-table">
@@ -328,13 +328,9 @@
                                 <tr>
                                     <td>
                                         <div class="flex items-center gap-3">
-                                            <span class="badge badge-level-1">S{{ $sub->subtitulo }}</span>
-                                            <div>
-                                                {{-- Calculate percentage of displaying items, assuming monthly total is the
-                                                denominator --}}
-                                                <div style="font-size: 12px; color: var(--text-muted);">
-                                                    {{ round(($sub->total_devengado / ($monthly->total_devengado ?: 1)) * 100, 1) }}%
-                                                </div>
+                                            <span class="badge" style="background: #eff6ff; color: #1e40af;">S{{ $sub->subtitulo }}</span>
+                                            <div style="font-size: 12px; color: var(--text-muted);">
+                                                {{ round(($sub->total_devengado / ($monthly->total_devengado ?: 1)) * 100, 1) }}%
                                             </div>
                                         </div>
                                     </td>
@@ -343,61 +339,113 @@
                                     </td>
                                 </tr>
                             @endforeach
-                            @if(count($subtitulos) == 0)
-                                <tr>
-                                    <td colspan="2" class="text-center text-muted">Sin datos para este mes</td>
-                                </tr>
-                            @endif
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Nivel 2: Ítems -->
+        <!-- Ranking Hierárquico (Niveles 3, 4, 5) -->
         <div class="col-span-2">
-            <div class="sing-card p-0">
-                <div class="p-5 border-b border-gray-100">
-                    <h2 style="font-size: 16px; font-weight: 600;">Nivel 2: Ítems Desglosados</h2>
-                    <p style="font-size: 13px; color: var(--text-muted);">Detalle específico excluyendo totales de
-                        subtítulos</p>
+            <div class="sing-card p-0 h-full">
+                <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 600;">Ranking de Gastos Operativos</h2>
+                        <p style="font-size: 13px; color: var(--text-muted);">Análisis detallado de ítems y asignaciones (Niveles 3+)</p>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="sing-table">
                         <thead>
                             <tr>
-                                <th>Concepto / Ítem</th>
-                                <th>Subtítulo Padre</th>
-                                <th class="text-right">Gasto Mensual</th>
+                                <th>Código / Concepto</th>
+                                <th>Nivel</th>
+                                <th class="text-right">Gasto</th>
+                                <th class="text-right">% s/Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($items as $item)
+                            @foreach($ranking as $item)
+                                @php
+                                    $nivel = 1;
+                                    $codeClean = preg_replace('/[^0-9]/', '', $item->codigo_completo ?? '');
+                                    $codeLen = strlen($codeClean);
+                                    if ($codeLen <= 2) $nivel = 1;
+                                    elseif ($codeLen <= 4) $nivel = 2;
+                                    elseif ($codeLen <= 7) $nivel = 3;
+                                    elseif ($codeLen <= 10) $nivel = 4;
+                                    else $nivel = 5;
+                                @endphp
                                 <tr>
                                     <td>
-                                        <div style="font-weight: 500;">{{ $item->concepto }}</div>
-                                        <div
-                                            style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                                            <span class="badge badge-level-2">{{ $item->subtitulo }}.{{ $item->item }}</span>
-                                        </div>
+                                        <div class="font-mono text-[12px] text-[--primary-blue] font-bold">{{ $item->codigo_completo }}</div>
+                                        <div style="font-weight: 500; font-size: 13px;">{{ Str::limit($item->concepto, 45) }}</div>
                                     </td>
                                     <td>
-                                        <span class="badge badge-level-1">S{{ $item->subtitulo }}</span>
+                                        <span class="badge" style="background: #f3f4f6; color: #4b5563; font-size: 10px;">{{ $nivel }}</span>
                                     </td>
                                     <td class="text-right font-semibold">
                                         $ {{ number_format($item->total_devengado, 0, ',', '.') }}
                                     </td>
+                                    <td class="text-right">
+                                        <div style="font-size: 11px; color: var(--text-muted);">
+                                            {{ round(($item->total_devengado / ($monthly->total_devengado ?: 1)) * 100, 2) }}%
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
-                            @if(count($items) == 0)
-                                <tr>
-                                    <td colspan="3" class="text-center text-muted">Sin datos de detalle</td>
-                                </tr>
-                            @endif
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Trend Analysis (Merged from Tendencia) -->
+    <div class="sing-card p-0 mb-8">
+        <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div>
+                <h2 style="font-size: 16px; font-weight: 600;">Histórico de Tendencia</h2>
+                <p style="font-size: 13px; color: var(--text-muted);">Comparativa de los últimos 12 meses de ejecución</p>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="sing-table">
+                <thead>
+                    <tr>
+                        <th>Mes / Año</th>
+                        <th class="text-right">Gasto Devengado</th>
+                        <th class="text-right">Variación ($)</th>
+                        <th class="text-right">Variación (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($history as $row)
+                        <tr>
+                            <td style="font-weight: 500">
+                                {{ $meses[$row->mes] }} {{ $row->anio }}
+                            </td>
+                            <td class="text-right">
+                                $ {{ number_format($row->total_devengado, 0, ',', '.') }}
+                            </td>
+                            <td class="text-right">
+                                <span style="font-weight: 500; {{ $row->variacion_monto > 0 ? 'color: var(--danger);' : 'color: var(--success);' }}">
+                                    {{ $row->variacion_monto > 0 ? '+' : '' }}{{ number_format($row->variacion_monto, 0, ',', '.') }}
+                                </span>
+                            </td>
+                            <td class="text-right">
+                                @if($row->variacion_pct != 0)
+                                    <span class="badge" style="{{ $row->variacion_pct > 0 ? 'background: #fee2e2; color: #ef4444;' : 'background: #dcfce7; color: #16a34a;' }}">
+                                        {{ $row->variacion_pct > 0 ? '↑' : '↓' }} {{ abs(round($row->variacion_pct, 1)) }}%
+                                    </span>
+                                @else
+                                    <span style="color: var(--text-muted); font-size: 12px;">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 @endsection

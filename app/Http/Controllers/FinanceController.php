@@ -64,21 +64,30 @@ class FinanceController extends Controller
             ->limit(5)
             ->get();
 
-        // 4. Last Import Status (Context Header)
-        $lastImport = \App\Models\ImportRun::latest()->first();
-
-        return view('finance.resumen', compact('monthly', 'ytd', 'trend', 'subtitulos', 'items', 'anio', 'mes', 'alerts', 'lastImport'));
-    }
-
-    public function tendencia()
-    {
-        $data = DB::table('vw_fin_tendencia_mensual')
+        // 4. Trend Data (merged from tendencia)
+        $history = DB::table('vw_fin_tendencia_mensual')
             ->orderBy('anio', 'desc')
             ->orderBy('mes', 'desc')
             ->limit(12)
             ->get();
 
-        return view('finance.tendencia', compact('data'));
+        // 5. Ranking Items (Debería incluir todos los niveles operativos)
+        $ranking = DB::table('vw_fin_ranking_items')
+            ->where('anio', $anio)
+            ->where('mes', $mes)
+            ->orderBy('total_devengado', 'desc')
+            ->limit(15)
+            ->get();
+
+        // 6. Last Import Status (Context Header)
+        $lastImport = \App\Models\ImportRun::latest()->first();
+
+        return view('finance.resumen', compact('monthly', 'ytd', 'trend', 'subtitulos', 'ranking', 'anio', 'mes', 'alerts', 'lastImport', 'history'));
+    }
+
+    public function tendencia()
+    {
+        return redirect()->route('finance.resumen');
     }
 
     public function powerbi()

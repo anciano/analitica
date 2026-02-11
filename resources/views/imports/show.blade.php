@@ -4,9 +4,10 @@
     <div class="mb-4">
         <a href="{{ route('imports.index') }}"
             style="color: var(--text-muted); font-size: 0.875rem; text-decoration: none;">&larr; Volver al listado</a>
-        <h1 class="mb-2 mt-2">Detalle de Importación #{{ $importRun->id }}</h1>
-        <p style="color: var(--text-muted)">{{ $importRun->version->dataset->name }} - Periodo
-            {{ $importRun->anio }}/{{ str_pad($importRun->mes, 2, '0', STR_PAD_LEFT) }}</p>
+        <h1 class="mb-2 mt-2">Detalle de Importación #{{ $import->id }}</h1>
+        <p style="color: var(--text-muted)">{{ $import->version->dataset->name }} - Periodo
+            {{ $import->target_anio }}/{{ str_pad($import->target_mes, 2, '0', STR_PAD_LEFT) }}
+        </p>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 300px; gap: 2rem;">
@@ -15,19 +16,19 @@
                 style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
                 <div>
                     <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Total Filas</p>
-                    <h2 style="margin: 0.5rem 0;">{{ $importRun->total_rows ?? 0 }}</h2>
+                    <h2 style="margin: 0.5rem 0;">{{ $import->total_rows ?? 0 }}</h2>
                 </div>
                 <div>
                     <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Válidas</p>
-                    <h2 style="margin: 0.5rem 0; color: #4ade80;">{{ $importRun->valid_rows ?? 0 }}</h2>
+                    <h2 style="margin: 0.5rem 0; color: #4ade80;">{{ $import->valid_rows ?? 0 }}</h2>
                 </div>
                 <div>
                     <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Con Error</p>
-                    <h2 style="margin: 0.5rem 0; color: #fca5a5;">{{ $importRun->error_rows ?? 0 }}</h2>
+                    <h2 style="margin: 0.5rem 0; color: #fca5a5;">{{ $import->error_rows ?? 0 }}</h2>
                 </div>
             </div>
 
-            @if($importRun->errors->count() > 0)
+            @if($import->errors->count() > 0)
                 <div class="card">
                     <div class="flex justify-between items-center mb-4">
                         <h3 style="margin: 0;">Errores Detectados</h3>
@@ -45,7 +46,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($importRun->errors as $error)
+                            @foreach($import->errors as $error)
                                 <tr style="border-bottom: 1px solid var(--border); font-size: 0.8125rem;">
                                     <td style="padding: 0.75rem;">{{ $error->row_number }}</td>
                                     <td style="padding: 0.75rem;"><strong>{{ $error->column_name }}</strong></td>
@@ -70,21 +71,21 @@
                 <div style="font-size: 0.8125rem;">
                     <p class="flex justify-between">
                         <span style="color: var(--text-muted)">Estado:</span>
-                        <span>{{ strtoupper($importRun->status) }}</span>
+                        <span>{{ strtoupper($import->status) }}</span>
                     </p>
                     <p class="flex justify-between">
                         <span style="color: var(--text-muted)">Iniciado:</span>
-                        <span>{{ $importRun->created_at->format('H:i d/m/Y') }}</span>
+                        <span>{{ $import->created_at->format('H:i d/m/Y') }}</span>
                     </p>
-                    @if($importRun->processed_at)
+                    @if($import->processed_at)
                         <p class="flex justify-between">
                             <span style="color: var(--text-muted)">Finalizado:</span>
-                            <span>{{ $importRun->processed_at->format('H:i d/m/Y') }}</span>
+                            <span>{{ $import->processed_at->format('H:i d/m/Y') }}</span>
                         </p>
                     @endif
                     <p class="flex justify-between">
                         <span style="color: var(--text-muted)">Usuario:</span>
-                        <span>{{ $importRun->user->name }}</span>
+                        <span>{{ $import->user->name }}</span>
                     </p>
                 </div>
             </div>

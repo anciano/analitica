@@ -42,9 +42,7 @@ class UpsertFinalJob implements ShouldQueue
                 ], [
                     'anio',
                     'mes',
-                    'subtitulo',
-                    'item',
-                    'asignacion',
+                    'codigo_completo',
                     'fuente'
                 ], [
                     'concepto',
@@ -53,6 +51,16 @@ class UpsertFinalJob implements ShouldQueue
                     'devengado',
                     'pagado',
                     'saldo',
+                    'subtitulo',
+                    'item',
+                    'asignacion',
+                    'nivel',
+                    'codigo_completo',
+                    'requerimiento',
+                    'deuda_flotante',
+                    'saldo_por_aplicar',
+                    'saldo_por_devengar',
+                    'row_number',
                     'import_run_id'
                 ]);
             }

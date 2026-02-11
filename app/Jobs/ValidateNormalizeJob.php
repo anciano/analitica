@@ -32,49 +32,47 @@ class ValidateNormalizeJob implements ShouldQueue
             $normalized = [];
             $errors = [];
 
-            // 1 & 2. Handle composite 'Concepto Presupuestario' or separate subtitulo/item
-            $conceptoCol = $this->getVal($payload, 'concepto presupuestario');
+            // 1 & 2. Handle 'Concepto Presupuestario'
+            $conceptoCol = $payload['concepto presupuestario'] ?? '';
+            $normalized['concepto'] = trim($conceptoCol);
+
             if ($conceptoCol) {
-                // Format: "21 GASTOS EN PERSONAL" or "2101 Personal de Planta"
                 $parts = explode(' ', trim($conceptoCol), 2);
-                $code = $parts[0] ?? '';
-                if (strlen($code) == 2) {
-                    $normalized['subtitulo'] = $code;
-                    $normalized['item'] = '00';
-                } elseif (strlen($code) == 4) {
-                    $normalized['subtitulo'] = substr($code, 0, 2);
-                    $normalized['item'] = substr($code, 2, 2);
-                } else {
-                    $normalized['subtitulo'] = '00';
-                    $normalized['item'] = '00';
-                }
+                $code = trim($parts[0] ?? '');
+                $normalized['codigo_completo'] = $code;
+
+                // Extract levels based on Chilean budget structure
+                $normalized['subtitulo'] = (strlen($code) >= 2) ? substr($code, 0, 2) : str_pad($code, 2, '0', STR_PAD_LEFT);
+                $normalized['item'] = (strlen($code) >= 4) ? substr($code, 2, 2) : '00';
+                $normalized['asignacion'] = (strlen($code) > 4) ? substr($code, 4) : '';
             } else {
-                $normalized['subtitulo'] = trim($this->getVal($payload, 'subtitulo') ?? '00');
-                $normalized['item'] = trim($this->getVal($payload, 'item') ?? '00');
+                $normalized['codigo_completo'] = '';
+                $normalized['subtitulo'] = '00';
+                $normalized['item'] = '00';
+                $normalized['asignacion'] = '';
             }
 
-            // 3. Required & Numeric: devengado
-            $devengadoRaw = $this->getVal($payload, 'devengado');
-            $devengado = $this->normalizeNumeric($devengadoRaw);
-            if ($devengado === null) {
-                $errors[] = ['column' => 'devengado', 'message' => 'Estructura numérica inválida', 'original' => $devengadoRaw];
-            } else {
-                $normalized['devengado'] = $devengado;
-            }
+            // 3. Normalized Budgetary Fields (Explicit mapping)
+            $normalized['presupuesto_vigente'] = $this->normalizeNumeric($payload['ley de presupuestos'] ?? 0);
+            $normalized['compromiso'] = $this->normalizeNumeric($payload['compromiso'] ?? 0);
+            $normalized['devengado'] = $this->normalizeNumeric($payload['devengado'] ?? 0);
+            $normalized['pagado'] = $this->normalizeNumeric($payload['efectivo'] ?? 0);
+            $normalized['saldo'] = $this->normalizeNumeric($payload['saldo por comprometer'] ?? 0);
 
-            // 4. Other fields (optional but normalized)
-            $normalized['asignacion'] = trim($this->getVal($payload, 'asignacion') ?? '');
-            $normalized['concepto'] = trim($this->getVal($payload, 'concepto') ?? '');
-            $normalized['presupuesto_vigente'] = $this->normalizeNumeric($this->getVal($payload, 'presupuesto_vigente'));
-            $normalized['compromiso'] = $this->normalizeNumeric($this->getVal($payload, 'compromiso'));
-            $normalized['pagado'] = $this->normalizeNumeric($this->getVal($payload, 'pagado'));
-            $normalized['saldo'] = $this->normalizeNumeric($this->getVal($payload, 'saldo'));
+            // New fields
+            $normalized['requerimiento'] = $this->normalizeNumeric($payload['requerimiento'] ?? 0);
+            $normalized['deuda_flotante'] = $this->normalizeNumeric($payload['deuda flotante'] ?? 0);
+            $normalized['saldo_por_aplicar'] = $this->normalizeNumeric($payload['saldo por aplicar'] ?? 0);
+            $normalized['saldo_por_devengar'] = $this->normalizeNumeric($payload['saldo por devengar'] ?? 0);
 
-            $isValid = empty($errors);
+            $normalized['nivel'] = (int) ($payload['nivel'] ?? 0);
+            $normalized['row_number'] = $row->row_number;
+
+            $isValid = ($normalized['devengado'] !== null);
             $row->update([
                 'payload_parsed' => $normalized,
                 'is_valid' => $isValid,
-                'validation_errors' => $errors,
+                'validation_errors' => $isValid ? [] : [['column' => 'devengado', 'message' => 'Monto devengado inválido']],
             ]);
 
             if ($isValid)

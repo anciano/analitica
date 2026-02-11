@@ -147,7 +147,7 @@
                             <td>
                                 <div style="font-weight: 600;">{{ $import->version->dataset->name }}</div>
                                 <div style="font-size: 13px; color: var(--text-muted);">
-                                    {{ $import->anio }} - Mes {{ str_pad($import->mes, 2, '0', STR_PAD_LEFT) }}
+                                    {{ $import->target_anio }} - Mes {{ str_pad($import->target_mes, 2, '0', STR_PAD_LEFT) }}
                                 </div>
                             </td>
                             <td>
@@ -180,7 +180,18 @@
                                 {{ $import->created_at->diffForHumans() }}
                             </td>
                             <td style="padding-right: 24px;">
-                                <a href="{{ route('imports.show', $import) }}" class="btn-action">Ver Detalle</a>
+                                <div class="flex items-center gap-3">
+                                    <a href="{{ route('imports.show', $import) }}" class="btn-action">Ver</a>
+                                    <a href="{{ route('imports.edit', $import) }}" class="btn-action"
+                                        style="color: var(--warning)">Editar</a>
+                                    <form action="{{ route('imports.destroy', $import) }}" method="POST"
+                                        onsubmit="return confirm('¿Está seguro de eliminar esta carga? Se borrarán todos los registros asociados.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-action"
+                                            style="color: var(--danger); background: none; border: none; cursor: pointer; padding: 0;">Eliminar</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
