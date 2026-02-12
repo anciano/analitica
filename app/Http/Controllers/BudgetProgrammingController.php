@@ -113,7 +113,8 @@ class BudgetProgrammingController extends Controller
                     return $item->clasificador->parent_id === $padre->clasificador->id;
                 });
 
-                $padre->monto_programado = $hijos->sum('monto_programado');
+                $directo = $itemsByClasificador->get($padre->clasificador->id, collect())->sum('monto_anual');
+                $padre->monto_programado = $directo + $hijos->sum('monto_programado');
                 // Nota: La ejecución ya viene agregada desde la base si usamos los códigos cortos, 
                 // pero por seguridad también podríamos sumarla aquí si la vista no lo hace.
             }

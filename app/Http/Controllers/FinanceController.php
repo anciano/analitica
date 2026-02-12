@@ -72,17 +72,26 @@ class FinanceController extends Controller
             ->get();
 
         // 5. Ranking Items (Debería incluir todos los niveles operativos)
-        $ranking = DB::table('vw_fin_ranking_items')
+        $ranking = DB::table('vw_fin_plan_vs_ejecucion')
             ->where('anio', $anio)
             ->where('mes', $mes)
-            ->orderBy('total_devengado', 'desc')
+            ->orderBy('monto_devengado', 'desc')
             ->limit(15)
             ->get();
 
-        // 6. Last Import Status (Context Header)
+        // 6. Summary from active plan vs execution
+        $planStats = DB::table('vw_fin_plan_vs_ejecucion')
+            ->where('anio', $anio)
+            ->where('mes', '<=', $mes)
+            ->select(
+                DB::raw('SUM(monto_programado) as total_programado_ytd'),
+                DB::raw('SUM(monto_devengado) as total_devengado_ytd')
+            )->first();
+
+        // 7. Last Import Status (Context Header)
         $lastImport = \App\Models\ImportRun::latest()->first();
 
-        return view('finance.resumen', compact('monthly', 'ytd', 'trend', 'subtitulos', 'ranking', 'anio', 'mes', 'alerts', 'lastImport', 'history'));
+        return view('finance.resumen', compact('monthly', 'ytd', 'trend', 'subtitulos', 'ranking', 'anio', 'mes', 'alerts', 'lastImport', 'history', 'planStats'));
     }
 
     public function tendencia()

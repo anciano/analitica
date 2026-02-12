@@ -152,7 +152,7 @@
                                                         Meses OK
                                                     </span>
                                                 @else
-                                                    <a href="{{ route('planes.items.distribuir', $item->id) }}" class="text-[10px] font-bold text-[--warning] hover:underline uppercase">
+                                                    <a href="{{ route('programacion.planes.items.distribuir', $item->id) }}" class="text-[10px] font-bold text-[--warning] hover:underline uppercase">
                                                         Distrib. ({{ $mesesCount }}/12)
                                                     </a>
                                                 @endif

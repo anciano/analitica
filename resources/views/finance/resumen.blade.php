@@ -2,65 +2,20 @@
 
 @section('content')
     <style>
-        :root {
-            /* Basic Colors */
-            --bg-app: #F5F7FA;
-            --bg-surface: #FFFFFF;
-            --border-soft: #E6ECF2;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-
-            /* Sidebar Colors (Reference) */
-            --sidebar-bg: #0E1628;
-            --sidebar-icon: #9AA4BF;
-            --sidebar-active: #3B82F6;
-
-            /* Semantic Colors */
-            --primary-blue: #4F8DF5;
-            --primary-cyan: #4FD1C5;
-            --primary-yellow: #F6C85F;
-            --primary-red: #F87171;
-            --success: #22C55E;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-
-            /* Fonts */
-            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-app);
-            color: var(--text-main);
-            font-family: var(--font-family);
-        }
-
         .dashboard-title {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
 
-        /* Card Styles */
-        .sing-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-soft);
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-            padding: 20px;
-            height: 100%;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sing-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
+        /* Specialized card labels for KPIs */
         .card-label {
-            font-size: 13px;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
             margin-bottom: 8px;
-            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .kpi-value {
@@ -78,15 +33,7 @@
             gap: 4px;
         }
 
-        .text-success {
-            color: var(--success);
-        }
-
-        .text-danger {
-            color: var(--danger);
-        }
-
-        /* Table Styles */
+        /* Table Styles Refined */
         .sing-table {
             width: 100%;
             border-collapse: separate;
@@ -96,16 +43,17 @@
         .sing-table th {
             text-align: left;
             padding: 12px 16px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             border-bottom: 1px solid var(--border-soft);
+            background: rgba(249, 250, 251, 0.5);
         }
 
         .sing-table td {
-            padding: 16px;
+            padding: 14px 16px;
             font-size: 14px;
             color: var(--text-main);
             border-bottom: 1px solid var(--border-soft);
@@ -118,7 +66,6 @@
 
         .sing-table tr:hover td {
             background-color: #F9FAFB;
-            /* Slightly grey on hover */
         }
 
         .badge {
@@ -126,24 +73,11 @@
             align-items: center;
             padding: 4px 8px;
             border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
-        .badge-level-1 {
-            background: #E0F2FE;
-            color: #0369A1;
-        }
-
-        /* Light blue */
-        .badge-level-2 {
-            background: #F3E8FF;
-            color: #7E22CE;
-        }
-
-        /* Light purple */
-
-        /* Inputs */
         .sing-select {
             background: var(--bg-surface);
             border: 1px solid var(--border-soft);
@@ -151,13 +85,15 @@
             padding: 8px 12px;
             border-radius: 8px;
             font-size: 14px;
+            font-weight: 500;
             outline: none;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .sing-select:focus {
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 2px rgba(79, 141, 245, 0.2);
+            box-shadow: 0 0 0 3px rgba(79, 141, 245, 0.1);
         }
     </style>
 
@@ -209,7 +145,7 @@
 
     <!-- Alerts Table (Lo que requiere atención) -->
     @if(isset($alerts) && count($alerts) > 0)
-        <div class="sing-card mb-8 p-0">
+        <div class="card mb-8 p-0 overflow-hidden">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center">
                 <div>
                     <h2 style="font-size: 16px; font-weight: 600;">⚠️ Lo que requiere atención</h2>
@@ -261,9 +197,9 @@
     @endif
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <!-- Monthly Devengado -->
-        <div class="sing-card">
+        <div class="card">
             <div class="card-label">DEVENGADO DEL MES</div>
             <div class="kpi-value">$ {{ number_format($monthly->total_devengado ?? 0, 0, ',', '.') }}</div>
             <div class="kpi-delta {{ ($trend->variacion_pct ?? 0) > 0 ? 'text-danger' : 'text-success' }}">
@@ -274,7 +210,7 @@
         </div>
 
         <!-- YTD -->
-        <div class="sing-card">
+        <div class="card">
             <div class="card-label">ACUMULADO ANUAL</div>
             <div class="kpi-value">$ {{ number_format($ytd ?? 0, 0, ',', '.') }}</div>
             <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
@@ -282,25 +218,38 @@
             </div>
         </div>
 
-        <!-- Ejecución -->
-        <div class="sing-card">
-            <div class="card-label">EJECUCIÓN PRESUPUESTARIA</div>
-            <div class="kpi-value">{{ round($monthly->porcentaje_ejecucion ?? 0, 1) }}%</div>
-            <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2 dark:bg-gray-700">
-                <div class="bg-blue-500 h-1.5 rounded-full"
-                    style="width: {{ min($monthly->porcentaje_ejecucion ?? 0, 100) }}%"></div>
-            </div>
+        <!-- Presupuesto Planificado -->
+        <div class="card">
+            <div class="card-label">PLANIFICADO (YTD)</div>
+            <div class="kpi-value" style="color: var(--primary-blue)">$ {{ number_format($planStats->total_programado_ytd ?? 0, 0, ',', '.') }}</div>
             <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-                Sobre presupuesto vigente
+                Monto aprobado en sistema
             </div>
         </div>
 
-        <!-- Proyección -->
-        <div class="sing-card">
+        <!-- Ejecución vs Plan -->
+        <div class="card">
+            <div class="card-label">AVANCE VS PLAN</div>
+            @php 
+                $avancePlan = ($planStats->total_programado_ytd ?? 0) > 0 
+                    ? ($planStats->total_devengado_ytd / $planStats->total_programado_ytd) * 100 
+                    : 0;
+            @endphp
+            <div class="kpi-value {{ $avancePlan > 100 ? 'text-danger' : 'text-success' }}">
+                {{ round($avancePlan, 1) }}%
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div class="h-full rounded-full {{ $avancePlan > 100 ? 'bg-[--danger]' : ($avancePlan > 90 ? 'bg-[--warning]' : 'bg-[--success]') }}"
+                    style="width: {{ min($avancePlan, 100) }}%"></div>
+            </div>
+        </div>
+
+        <!-- Proyección Anual -->
+        <div class="card">
             <div class="card-label">PROYECCIÓN ANUAL</div>
             <div class="kpi-value">$ {{ number_format(($ytd / max($mes, 1)) * 12, 0, ',', '.') }}</div>
             <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-                Estimación lineal
+                Cálculo lineal (12m)
             </div>
         </div>
     </div>
@@ -310,7 +259,7 @@
 
         <!-- Nivel 1: Subtítulos -->
         <div class="col-span-1">
-            <div class="sing-card p-0 h-full">
+            <div class="card p-0">
                 <div class="p-5 border-b border-gray-100">
                     <h2 style="font-size: 16px; font-weight: 600;">Nivel 1: Subtítulos</h2>
                     <p style="font-size: 13px; color: var(--text-muted);">Gasto agrupado por subtítulo</p>
@@ -347,7 +296,7 @@
 
         <!-- Ranking Hierárquico (Niveles 3, 4, 5) -->
         <div class="col-span-2">
-            <div class="sing-card p-0 h-full">
+            <div class="card p-0">
                 <div class="p-5 border-b border-gray-100 flex items-center justify-between">
                     <div>
                         <h2 style="font-size: 16px; font-weight: 600;">Ranking de Gastos Operativos</h2>
@@ -359,37 +308,37 @@
                         <thead>
                             <tr>
                                 <th>Código / Concepto</th>
-                                <th>Nivel</th>
-                                <th class="text-right">Gasto</th>
-                                <th class="text-right">% s/Total</th>
+                                <th class="text-right">Prog. Mes</th>
+                                <th class="text-right">Gasto Mes</th>
+                                <th class="text-right">% Avance</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($ranking as $item)
                                 @php
-                                    $nivel = 1;
-                                    $codeClean = preg_replace('/[^0-9]/', '', $item->codigo_completo ?? '');
-                                    $codeLen = strlen($codeClean);
-                                    if ($codeLen <= 2) $nivel = 1;
-                                    elseif ($codeLen <= 4) $nivel = 2;
-                                    elseif ($codeLen <= 7) $nivel = 3;
-                                    elseif ($codeLen <= 10) $nivel = 4;
-                                    else $nivel = 5;
+                                    $avance = $item->monto_programado > 0 ? ($item->monto_devengado / $item->monto_programado) * 100 : 0;
                                 @endphp
                                 <tr>
                                     <td>
-                                        <div class="font-mono text-[12px] text-[--primary-blue] font-bold">{{ $item->codigo_completo }}</div>
-                                        <div style="font-weight: 500; font-size: 13px;">{{ Str::limit($item->concepto, 45) }}</div>
+                                        <div class="font-mono text-[11px] text-[--primary-blue] font-bold">{{ $item->item_codigo }}</div>
+                                        <div style="font-weight: 500; font-size: 13px;">{{ Str::limit($item->item_nombre, 40) }}</div>
+                                        <div class="text-[10px] text-[--text-muted]">{{ $item->cc_nombre }}</div>
                                     </td>
-                                    <td>
-                                        <span class="badge" style="background: #f3f4f6; color: #4b5563; font-size: 10px;">{{ $nivel }}</span>
+                                    <td class="text-right text-[--text-muted]">
+                                        $ {{ number_format($item->monto_programado, 0, ',', '.') }}
                                     </td>
                                     <td class="text-right font-semibold">
-                                        $ {{ number_format($item->total_devengado, 0, ',', '.') }}
+                                        $ {{ number_format($item->monto_devengado, 0, ',', '.') }}
                                     </td>
                                     <td class="text-right">
-                                        <div style="font-size: 11px; color: var(--text-muted);">
-                                            {{ round(($item->total_devengado / ($monthly->total_devengado ?: 1)) * 100, 2) }}%
+                                        <div class="flex flex-col items-end">
+                                            <span class="font-bold {{ $avance > 100 ? 'text-danger' : 'text-success' }}">
+                                                {{ round($avance, 1) }}%
+                                            </span>
+                                            <div class="w-16 bg-gray-100 rounded-full h-1 mt-1">
+                                                <div class="h-full rounded-full {{ $avance > 100 ? 'bg-[--danger]' : ($avance > 90 ? 'bg-[--warning]' : 'bg-[--success]') }}"
+                                                    style="width: {{ min($avance, 100) }}%"></div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -402,7 +351,7 @@
     </div>
 
     <!-- Trend Analysis (Merged from Tendencia) -->
-    <div class="sing-card p-0 mb-8">
+    <div class="card p-0 mb-8">
         <div class="p-5 border-b border-gray-100 flex items-center justify-between">
             <div>
                 <h2 style="font-size: 16px; font-weight: 600;">Histórico de Tendencia</h2>

@@ -2,76 +2,10 @@
 
 @section('content')
     <style>
-        :root {
-            /* Basic Colors */
-            --bg-app: #F5F7FA;
-            --bg-surface: #FFFFFF;
-            --border-soft: #E6ECF2;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-
-            /* Semantic Colors (Sing App Palette) */
-            --primary-blue: #4F8DF5;
-            --success: #22C55E;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-
-            /* Fonts */
-            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-app);
-            color: var(--text-main);
-            font-family: var(--font-family);
-        }
-
         .dashboard-page-title {
             font-size: 24px;
             font-weight: 600;
-            margin-bottom: 0.5rem;
             color: var(--text-main);
-        }
-
-        /* Card Styles */
-        .sing-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-soft);
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-            padding: 20px;
-            height: 100%;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        /* Table Styles */
-        .sing-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        .sing-table th {
-            text-align: left;
-            padding: 12px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-soft);
-        }
-
-        .sing-table td {
-            padding: 16px;
-            font-size: 14px;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-soft);
-            vertical-align: middle;
-        }
-
-        .sing-table tr:hover td {
-            background-color: #F9FAFB;
         }
 
         /* Status Badges */
@@ -109,23 +43,31 @@
         .btn-action {
             color: var(--primary-blue);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 13px;
+            transition: opacity 0.2s;
         }
 
         .btn-action:hover {
+            opacity: 0.7;
             text-decoration: underline;
         }
     </style>
 
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="dashboard-page-title">Historial de Registros</h1>
-            <p style="color: var(--text-muted); font-size: 14px;">Monitoreo de procesos y trazabilidad de datos.</p>
+            <h1 class="dashboard-page-title">Cargas de Datos</h1>
+            <p style="color: var(--text-muted); font-size: 14px;">Monitoreo de procesos y trazabilidad de importación.</p>
         </div>
+        <a href="{{ route('imports.create') }}" class="btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Nueva Carga
+        </a>
     </div>
 
-    <div class="sing-card p-0">
+    <div class="card p-0 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="sing-table">
                 <thead>

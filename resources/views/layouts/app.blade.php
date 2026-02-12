@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'Hospital Analitica') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -208,7 +209,43 @@
             opacity: 0.9;
             transform: translateY(-1px);
         }
+
+        /* Tom Select Overrides */
+        .ts-control {
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            border: 1px solid var(--border-soft) !important;
+            background-color: #F9FAFB !important;
+            font-size: 14px !important;
+            box-shadow: none !important;
+        }
+
+        .ts-wrapper.focus .ts-control {
+            border-color: var(--primary-blue) !important;
+            ring: 2px solid rgba(79, 141, 245, 0.2) !important;
+            outline: none !important;
+        }
+
+        .ts-dropdown {
+            border-radius: 8px !important;
+            border: 1px solid var(--border-soft) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            margin-top: 4px !important;
+            padding: 4px !important;
+        }
+
+        .ts-dropdown .active {
+            background-color: var(--primary-blue) !important;
+            color: white !important;
+            border-radius: 4px !important;
+        }
+
+        .ts-dropdown .option {
+            padding: 8px 12px !important;
+            font-size: 14px !important;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 </head>
 
 <body>

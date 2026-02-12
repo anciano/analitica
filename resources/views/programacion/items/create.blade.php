@@ -112,4 +112,28 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new TomSelect('#clasificador_item_id', {
+                create: false,
+                sortField: {
+                    field: 'text',
+                    direction: 'asc'
+                },
+                placeholder: 'Buscar por código o nombre...',
+                noResultsText: 'No se encontraron resultados'
+            });
+
+            new TomSelect('#centro_costo_id', {
+                create: false,
+                sortField: {
+                    field: 'text',
+                    direction: 'asc'
+                },
+                placeholder: 'Buscar por código o nombre...',
+                noResultsText: 'No se encontraron resultados'
+            });
+        });
+    </script>
 @endsection

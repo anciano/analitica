@@ -45,7 +45,8 @@
             </div>
         </div>
 
-        <form action="{{ route('planes.items.save-distribuir', $item->id) }}" method="POST" id="distribucionForm">
+        <form action="{{ route('programacion.planes.items.save-distribuir', $item->id) }}" method="POST"
+            id="distribucionForm">
             @csrf
 
             <div class="card bg-white mb-6">
