@@ -210,6 +210,48 @@
             transform: translateY(-1px);
         }
 
+        /* Table Styles */
+        .sing-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .sing-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-soft);
+            background: rgba(249, 250, 251, 0.5);
+        }
+
+        .sing-table td {
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-soft);
+            vertical-align: middle;
+        }
+
+        .sing-table tr:hover td {
+            background-color: #F9FAFB;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
         /* Tom Select Overrides */
         .ts-control {
             border-radius: 8px !important;

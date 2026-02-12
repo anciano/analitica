@@ -8,37 +8,6 @@
             color: var(--text-main);
         }
 
-        /* Status Badges */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .status-completed {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
-        .status-failed {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .status-processing {
-            background: #dbeafe;
-            color: #2563eb;
-        }
-
-        .status-pending {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
 
         .btn-action {
             color: var(--primary-blue);
@@ -109,7 +78,7 @@
                                         default => strtoupper($import->status)
                                     };
                                 @endphp
-                                <span class="status-badge {{ $statusClass }}">
+                                <span class="badge {{ $statusClass }}">
                                     {{ $statusLabel }}
                                 </span>
                             </td>
