@@ -25,7 +25,7 @@ class CentroCostoController extends Controller
             $query->where('nivel', $request->nivel);
         }
 
-        if ($request->has('activo')) {
+        if ($request->filled('activo')) {
             $query->where('activo', $request->activo == '1');
         }
 
