@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinCentroCosto;
+use App\Models\FinPlanItem;
+use App\Models\FinEjecucionFact;
 use Illuminate\Http\Request;
 
 class CentroCostoController extends Controller
@@ -75,11 +77,21 @@ class CentroCostoController extends Controller
     {
         $centro = FinCentroCosto::findOrFail($id);
 
-        if ($centro->planItems()->exists()) {
-            $centro->update(['activo' => false]);
-            return redirect()->back()->with('success', 'El Centro de Costo tiene programación asociada. Se ha desactivado en lugar de eliminar.');
+        // Buscar todos los IDs de la rama (padre e hijos) usando el prefijo del código
+        // Esto es seguro dado que nuestra estructura jerárquica se basa en la extensión del código
+        $subtreeIds = FinCentroCosto::where('codigo', 'like', $centro->codigo . '%')->pluck('id');
+
+        // Verificar si algún nodo de la rama tiene programación o ejecución vinculada
+        $hasPlanning = FinPlanItem::whereIn('centro_costo_id', $subtreeIds)->exists();
+        $hasExecution = FinEjecucionFact::whereIn('centro_costo_id', $subtreeIds)->exists();
+
+        if ($hasPlanning || $hasExecution) {
+            // Si hay datos, desactivamos la rama completa en lugar de borrar para evitar errores de FK
+            FinCentroCosto::whereIn('id', $subtreeIds)->update(['activo' => false]);
+            return redirect()->back()->with('success', 'El Centro de Costo o sus dependencias tienen datos (presupuesto o ejecución) asociados. Se ha desactivado la rama completa.');
         }
 
+        // Si no hay datos vinculados, procedemos con el borrado (el cascade en DB limpia los hijos en fin_centros_costo)
         $centro->delete();
         return redirect()->route('programacion.centros-costo.index')
             ->with('success', 'Centro de Costo eliminado exitosamente.');
