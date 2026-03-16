@@ -1,0 +1,20 @@
+Array
+(
+    [A] => 2025
+    [B] => Mayo
+    [C] => 96
+    [D] => 195780
+    [E] => Fonasa Libre Elección (FMLE_B)
+    [F] => Mujer
+    [G] => 081602 - PH OTROS PROCEDIMIENTOS SOBRE TEJ. CONECTIVO Y SIST. MUSCULOESQUELÉTICO W/CC
+    [H] => M23.22 - Trastorno de menisco debido a desgarro o lesión antigua, ligamento cruzado posterior o asta posterior del menisco interno
+    [I] => [Z92.4]
+    [J] => 80.6 - ESCISION MENISCO RODILLA
+    [K] => [80.26][99.21]
+    [L] => 0
+    [M] => 26
+    [N] => No
+    [O] => 1.6495
+    [P] => 1
+    [Q] => 
+)

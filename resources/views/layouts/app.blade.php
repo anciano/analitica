@@ -60,7 +60,7 @@
 
         /* Sidebar Styles */
         .sidebar {
-            width: 240px;
+            width: 280px;
             background: var(--sidebar-bg);
             color: white;
             display: flex;
@@ -73,12 +73,12 @@
         }
 
         .sidebar-brand {
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             color: white;
             text-decoration: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -86,17 +86,34 @@
 
         .sidebar-nav {
             flex: 1;
-            padding: 1.5rem 1rem;
+            padding: 1rem 0.75rem;
             overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Custom subtle scrollbar */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .sidebar-nav:hover::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .nav-group-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             color: rgba(154, 164, 191, 0.4);
-            margin-bottom: 0.75rem;
-            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+            padding-left: 0.75rem;
             letter-spacing: 0.05em;
         }
 
@@ -104,14 +121,26 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.75rem 1rem;
+            padding: 0.625rem 0.875rem;
             color: var(--sidebar-icon);
             text-decoration: none;
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             font-weight: 500;
             border-radius: 8px;
             margin-bottom: 0.25rem;
             transition: all 0.2s;
+        }
+
+        /* Ensure containers don't flex siblings (vertical accordion) */
+        div.nav-item {
+            display: block !important;
+            padding: 0 !important;
+            background: transparent !important;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item i, .nav-item svg {
+            flex-shrink: 0;
         }
 
         .nav-item:hover {
@@ -119,39 +148,83 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .nav-item.active {
+        .nav-item.active:not(.has-submenu) {
             color: white;
             background: var(--sidebar-active);
         }
 
-        .nav-submenu {
-            margin-left: 2.75rem;
-            margin-bottom: 0.75rem;
-            padding-left: 0;
+        .nav-item.has-submenu.active > .nav-link {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.625rem 1rem;
+            color: var(--sidebar-icon);
+            text-decoration: none;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item.has-submenu .nav-submenu {
+            display: none;
+            padding: 0.25rem 0;
+            margin-left: 1.25rem;
+            margin-right: 0.5rem;
+            margin-top: 0.125rem;
+            margin-bottom: 0.5rem;
             border-left: 1px solid rgba(154, 164, 191, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 0 0 8px 8px;
+        }
+
+        .nav-item.has-submenu.open .nav-submenu {
+            display: block;
+        }
+
+        .nav-item.has-submenu.open .submenu-arrow {
+            transform: rotate(180deg);
         }
 
         .nav-sub-item {
             display: block;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.875rem;
             color: var(--sidebar-icon);
             text-decoration: none;
-            font-size: 0.8125rem;
-            transition: color 0.2s;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            border-radius: 6px;
+            margin-bottom: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .nav-sub-item:hover,
         .nav-sub-item.active {
             color: white;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* Main Content area */
         .content-wrapper {
             flex: 1;
-            margin-left: 240px;
+            padding-left: 280px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            width: 100%;
         }
 
         .top-bar {
@@ -314,15 +387,18 @@
 
             <div class="nav-group-label">Gestión de Datos</div>
             <div class="mb-2">
-                <div
-                    class="nav-item {{ request()->routeIs('imports.*') || request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    Carga
-                </div>
+            <div class="nav-item has-submenu {{ request()->routeIs('imports.*') || request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                    <div class="flex items-center gap-3">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Carga</span>
+                    </div>
+                    <svg class="submenu-arrow transition-transform duration-200" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
                 <div class="nav-submenu">
                     <a href="{{ route('dashboard') }}"
                         class="nav-sub-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">Historial</a>
@@ -331,18 +407,23 @@
                         Registros</a>
                 </div>
             </div>
+            </div>
 
             <div class="nav-group-label">Planificación</div>
             <div class="mb-2">
-                <div class="nav-item {{ request()->routeIs('programacion.*') ? 'active' : '' }}">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    Presupuesto
-                </div>
+            <div class="nav-item has-submenu {{ request()->routeIs('programacion.*') ? 'active' : '' }}">
+                <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                    <div class="flex items-center gap-3">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span>Presupuesto</span>
+                    </div>
+                    <svg class="submenu-arrow transition-transform duration-200" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
                 <div class="nav-submenu">
                     <a href="{{ route('programacion.index') }}"
                         class="nav-sub-item {{ request()->routeIs('programacion.index') ? 'active' : '' }}">Planes
@@ -354,6 +435,30 @@
                         de Costo</a>
                 </div>
             </div>
+            </div>
+
+            <div class="nav-group-label">GRD</div>
+            <div class="mb-2">
+            <div class="nav-item has-submenu {{ request()->routeIs('grd.*') ? 'active' : '' }}">
+                <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                    <div class="flex items-center gap-3">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            <path d="M9 14l2 2 4-4"></path>
+                        </svg>
+                        <span>Egresos</span>
+                    </div>
+                    <svg class="submenu-arrow transition-transform duration-200" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
+                <div class="nav-submenu">
+                    <a href="{{ route('grd.import.index') }}"
+                        class="nav-sub-item {{ request()->routeIs('grd.import.index') ? 'active' : '' }}">Carga GRD</a>
+                    <a href="{{ route('grd.import.create') }}"
+                        class="nav-sub-item {{ request()->routeIs('grd.import.create') ? 'active' : '' }}">Nueva Carga</a>
+                </div>
+            </div>
+            </div>
 
             <a href="{{ route('finance.powerbi') }}" class="nav-item" style="color: var(--warning)">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -363,6 +468,32 @@
                 </svg>
                 Power BI
             </a>
+
+            <!-- ML / Predicción -->
+            <div class="nav-group-label">Inteligencia Predictiva</div>
+            <div class="mb-2">
+                <div class="nav-item has-submenu {{ request()->is('ml*') ? 'active open' : '' }}">
+                    <a href="javascript:void(0)" class="nav-link flex items-center justify-between" onclick="toggleSubmenu(this)">
+                        <div class="flex items-center gap-3">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                            <span>Modelos ML</span>
+                        </div>
+                        <svg class="submenu-arrow transition-transform duration-200" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    </a>
+                    <div class="nav-submenu">
+                        <a href="{{ route('ml.models.index') }}" 
+                            class="nav-sub-item {{ request()->routeIs('ml.models.*') ? 'active' : '' }}">
+                            Gobernanza de Modelos
+                        </a>
+                        <a href="{{ route('ml.test.index') }}" 
+                            class="nav-sub-item {{ request()->routeIs('ml.test.*') ? 'active' : '' }}">
+                            Prueba de Modelo
+                        </a>
+                    </div>
+                </div>
+            </div>
 
             <div class="nav-group-label">Administración</div>
             <a href="{{ route('admin.users.index') }}"
@@ -459,6 +590,22 @@
             @yield('content')
         </main>
     </div>
+    <script>
+        function toggleSubmenu(element) {
+            const parent = element.closest('.nav-item');
+            parent.classList.toggle('open');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto open active submenus
+            document.querySelectorAll('.nav-sub-item.active').forEach(item => {
+                const parent = item.closest('.nav-item');
+                if (parent) {
+                    parent.classList.add('open', 'active');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

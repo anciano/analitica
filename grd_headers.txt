@@ -1,0 +1,20 @@
+Array
+(
+    [A] => Año egreso
+    [B] => Mes egreso (Descripción)
+    [C] => Nº Historia
+    [D] => Episodio CMBD
+    [E] => Prevision (Desc)
+    [F] => Sexo (Desc)
+    [G] => GRD
+    [H] => Diagnóstico Principal
+    [I] => Conjunto Dx Secundarios
+    [J] => Procedimiento Principal
+    [K] => Conjunto Procedimientos Secundarios
+    [L] => Estancia Media
+    [M] => Punto Corte Superior
+    [N] => CASE WHEN Conjunto Procedimientos LIKE '%96.70%' THEN 'Sí' WHEN Conjunto Procedimientos LIKE '%96.71%' THEN 'Sí' WHEN Conjunto Procedimientos LIKE '%96.72%' THEN 'Sí' ELSE 'No' END
+    [O] => Peso GRD Medio (Todos)
+    [P] => Egresos
+    [Q] => 
+)

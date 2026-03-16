@@ -21,6 +21,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [ImportController::class, 'index'])->name('dashboard');
     Route::resource('imports', ImportController::class);
 
+    // GRD Management
+    Route::group(['prefix' => 'grd', 'as' => 'grd.'], function () {
+        Route::resource('import', \App\Http\Controllers\GrdImportController::class);
+    });
+
+    // ML Governance (MLOps)
+    Route::group(['prefix' => 'ml', 'as' => 'ml.'], function () {
+        Route::get('models', [\App\Http\Controllers\MlModelController::class, 'index'])->name('models.index');
+        Route::get('models/{model}', [\App\Http\Controllers\MlModelController::class, 'show'])->name('models.show');
+        Route::post('models/{model}/activate', [\App\Http\Controllers\MlModelController::class, 'activateVersion'])->name('models.activate');
+        
+        // Testing
+        Route::get('test', [\App\Http\Controllers\MlTestController::class, 'index'])->name('test.index');
+        Route::post('test/predict', [\App\Http\Controllers\MlTestController::class, 'predict'])->name('test.predict');
+    });
+
     // Administración
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
