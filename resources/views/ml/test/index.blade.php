@@ -65,20 +65,54 @@
                 Respuesta del Motor
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- GRD Probable -->
                 <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
                     <div class="text-[10px] uppercase font-bold text-blue-600 mb-1">GRD Probable</div>
                     <div id="res_grd_code" class="text-lg font-bold text-blue-900">-</div>
                     <div id="res_grd_desc" class="text-xs text-blue-700 line-clamp-1">-</div>
-                    <div id="res_grd_conf" class="mt-2 h-1.5 w-full bg-blue-200 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-600" style="width: 82%"></div>
+                    <div id="res_grd_conf_container" class="mt-2 h-1.5 w-full bg-blue-200 rounded-full overflow-hidden">
+                        <div id="res_grd_conf_bar" class="h-full bg-blue-600" style="width: 0%"></div>
                     </div>
                 </div>
 
+                <!-- Estancia Esperada -->
                 <div class="p-4 bg-green-50 rounded-lg border border-green-100">
                     <div class="text-[10px] uppercase font-bold text-green-600 mb-1">Estancia Esperada</div>
                     <div id="res_estancia" class="text-lg font-bold text-green-900">- días</div>
                     <div id="res_estancia_rango" class="text-xs text-green-700">-</div>
+                </div>
+
+                <!-- Peso Estimado -->
+                <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
+                    <div class="text-[10px] uppercase font-bold text-purple-600 mb-1">Peso Estimado</div>
+                    <div id="res_peso" class="text-lg font-bold text-purple-900">-</div>
+                    <div id="res_peso_rango" class="text-xs text-purple-700">-</div>
+                </div>
+            </div>
+
+            <!-- Valorización Estimada -->
+            <div class="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <div class="text-[10px] uppercase font-bold text-amber-600 mb-1">Valorización Estimada</div>
+                        <div id="res_val_total" class="text-2xl font-bold text-amber-900">$ 0</div>
+                        <div id="res_val_rango" class="text-xs text-amber-700">Rango: $ 0 - $ 0</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase font-bold text-amber-600 mb-1">Precio Base HRC</div>
+                        <div id="res_val_base" class="text-sm font-bold text-amber-800">$ 0</div>
+                    </div>
+                </div>
+                <div class="pt-3 border-t border-amber-200 grid grid-cols-2 gap-4">
+                    <div>
+                        <div class="text-[10px] uppercase font-bold text-amber-600">Valor Día (Sugerido)</div>
+                        <div id="res_val_dia" class="text-base font-bold text-amber-900">$ 0 / día</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase font-bold text-amber-600">Rango Diario</div>
+                        <div id="res_val_dia_rango" class="text-sm text-amber-700 font-medium">$ 0 - $ 0</div>
+                    </div>
                 </div>
             </div>
 
@@ -100,6 +134,12 @@
 </div>
 
 <script>
+const formatCLP = new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    minimumFractionDigits: 0
+});
+
 document.getElementById('predictionForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
@@ -124,11 +164,28 @@ document.getElementById('predictionForm').addEventListener('submit', async (e) =
         document.getElementById('emptyState').classList.add('hidden');
         document.getElementById('resultCard').classList.remove('hidden');
         
+        // 1. GRD
         document.getElementById('res_grd_code').innerText = data.grd_probable.codigo;
         document.getElementById('res_grd_desc').innerText = data.grd_probable.descripcion;
+        const confidencePercent = (data.grd_probable.confianza * 100).toFixed(0);
+        document.getElementById('res_grd_conf_bar').style.width = confidencePercent + '%';
+        
+        // 2. Estancia
         document.getElementById('res_estancia').innerText = data.estancia_estimada.esperada_dias + ' días';
         document.getElementById('res_estancia_rango').innerText = 'Rango: ' + data.estancia_estimada.rango_dias.join('-') + ' días';
         
+        // 3. Peso
+        document.getElementById('res_peso').innerText = data.peso_estimado.valor;
+        document.getElementById('res_peso_rango').innerText = 'Rango: ' + data.peso_estimado.rango.join(' - ');
+        
+        // 4. Valorización
+        const val = data.valorizacion_estimada;
+        document.getElementById('res_val_total').innerText = formatCLP.format(val.monto_total);
+        document.getElementById('res_val_rango').innerText = `Rango: ${formatCLP.format(val.monto_rango[0])} - ${formatCLP.format(val.monto_rango[1])}`;
+        document.getElementById('res_val_base').innerText = formatCLP.format(val.precio_base_grd_hospital);
+        document.getElementById('res_val_dia').innerText = formatCLP.format(val.valor_dia) + ' / día';
+        document.getElementById('res_val_dia_rango').innerText = `${formatCLP.format(val.valor_dia_rango[0])} - ${formatCLP.format(val.valor_dia_rango[1])}`;
+
         document.getElementById('res_json').innerText = JSON.stringify(data, null, 2);
         
         const versionsEl = document.getElementById('res_versions');
@@ -141,6 +198,7 @@ document.getElementById('predictionForm').addEventListener('submit', async (e) =
         });
 
     } catch (error) {
+        console.error(error);
         alert('Error al ejecutar predicción');
     } finally {
         btn.disabled = false;

@@ -59,9 +59,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('planes/{plan}/items/create', [\App\Http\Controllers\BudgetPlanItemController::class, 'create'])->name('planes.items.create');
         Route::post('planes/{plan}/items', [\App\Http\Controllers\BudgetPlanItemController::class, 'store'])->name('planes.items.store');
 
-        // Distribution
+        // Distribution & Item Management
         Route::get('planes/items/{item}/distribuir', [\App\Http\Controllers\BudgetPlanItemController::class, 'distribuir'])->name('planes.items.distribuir');
         Route::post('planes/items/{item}/distribuir', [\App\Http\Controllers\BudgetPlanItemController::class, 'saveDistribuir'])->name('planes.items.save-distribuir');
+        
+        Route::get('planes/items/{item}/edit', [\App\Http\Controllers\BudgetPlanItemController::class, 'edit'])->name('planes.items.edit');
+        Route::put('planes/items/{item}', [\App\Http\Controllers\BudgetPlanItemController::class, 'update'])->name('planes.items.update');
+        Route::delete('planes/items/{item}', [\App\Http\Controllers\BudgetPlanItemController::class, 'destroy'])->name('planes.items.destroy');
 
         // Catalogs (Mantenedores)
         Route::resource('clasificador', \App\Http\Controllers\ClasificadorController::class);

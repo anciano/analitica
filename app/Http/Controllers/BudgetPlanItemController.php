@@ -137,4 +137,71 @@ class BudgetPlanItemController extends Controller
         return redirect()->route('programacion.planes.show', $item->plan_id)
             ->with('success', 'Distribución mensual guardada exitosamente.');
     }
+
+    public function edit($itemId)
+    {
+        $item = FinPlanItem::with(['plan', 'clasificadorItem', 'centroCosto'])->findOrFail($itemId);
+
+        if ($item->plan->estado !== 'borrador') {
+            return redirect()->route('programacion.planes.show', $item->plan_id)
+                ->with('error', 'Solo se pueden editar ítems de planes en estado borrador.');
+        }
+
+        return view('programacion.items.edit', compact('item'));
+    }
+
+    public function update(Request $request, $itemId)
+    {
+        $item = FinPlanItem::with('plan')->findOrFail($itemId);
+
+        if ($item->plan->estado !== 'borrador') {
+            return redirect()->route('programacion.planes.show', $item->plan_id)
+                ->with('error', 'Solo se pueden editar ítems de planes en estado borrador.');
+        }
+
+        $validated = $request->validate([
+            'monto_anual' => 'required|numeric|min:0',
+        ]);
+
+        $oldAmount = $item->monto_anual;
+        $newAmount = $validated['monto_anual'];
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($item, $oldAmount, $newAmount) {
+            $item->update(['monto_anual' => $newAmount]);
+
+            // Si el monto cambia, invalidamos la distribución mensual previa
+            if (abs($oldAmount - $newAmount) > 0.01) {
+                $item->mensualizaciones()->delete();
+            }
+        });
+
+        $message = 'Asignación actualizada exitosamente.';
+        if (abs($oldAmount - $newAmount) > 0.01) {
+            $message .= ' La distribución mensual fue eliminada al cambiar el monto total.';
+        }
+
+        return redirect()->route('programacion.planes.show', $item->plan_id)
+            ->with('success', $message);
+    }
+
+    public function destroy($itemId)
+    {
+        $item = FinPlanItem::with('plan')->findOrFail($itemId);
+
+        if ($item->plan->estado !== 'borrador') {
+            return redirect()->route('programacion.planes.show', $item->plan_id)
+                ->with('error', 'Solo se pueden eliminar ítems de planes en estado borrador.');
+        }
+
+        $planId = $item->plan_id;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($item) {
+            // Eliminamos mensualizaciones y luego el ítem
+            $item->mensualizaciones()->delete();
+            $item->delete();
+        });
+
+        return redirect()->route('programacion.planes.show', $planId)
+            ->with('success', 'Asignación eliminada exitosamente.');
+    }
 }

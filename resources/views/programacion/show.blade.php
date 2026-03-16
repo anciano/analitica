@@ -145,16 +145,40 @@
                                     @if(!$isParent && $node->items->count() > 0)
                                         @foreach($node->items as $item)
                                             @php $mesesCount = $item->mensualizaciones->count(); @endphp
-                                            <div class="flex items-center gap-2 mt-1">
-                                                @if($mesesCount == 12)
-                                                    <span class="text-[--success] text-[10px] font-bold flex items-center gap-0.5">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                                        Meses OK
-                                                    </span>
-                                                @else
-                                                    <a href="{{ route('programacion.planes.items.distribuir', $item->id) }}" class="text-[10px] font-bold text-[--warning] hover:underline uppercase">
-                                                        Distrib. ({{ $mesesCount }}/12)
-                                                    </a>
+                                            <div class="flex flex-col gap-2 mt-2">
+                                                <!-- Status Badge -->
+                                                <div class="flex items-center gap-2">
+                                                    @if($mesesCount == 12)
+                                                        <span class="text-[--success] text-[10px] font-bold flex items-center gap-0.5 bg-[--success]/5 px-1.5 py-0.5 rounded">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                            Meses OK
+                                                        </span>
+                                                    @else
+                                                        <a href="{{ route('programacion.planes.items.distribuir', $item->id) }}" class="text-[10px] font-bold text-[--warning] hover:underline uppercase bg-[--warning]/5 px-1.5 py-0.5 rounded">
+                                                            Distrib. ({{ $mesesCount }}/12)
+                                                        </a>
+                                                    @endif
+                                                </div>
+
+                                                <!-- Action Buttons (Only in Borrador) -->
+                                                @if($plan->estado === 'borrador')
+                                                    <div class="flex items-center gap-3 pt-1 border-t border-gray-100">
+                                                        <a href="{{ route('programacion.planes.items.edit', $item->id) }}" 
+                                                           class="text-[10px] font-bold text-[--primary-blue] hover:text-[--primary-blue]/80 transition uppercase flex items-center gap-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                            Editar Monto
+                                                        </a>
+                                                        <form action="{{ route('programacion.planes.items.destroy', $item->id) }}" 
+                                                              method="POST" 
+                                                              onsubmit="return confirm('¿Está seguro de eliminar esta asignación? Todos los datos de distribución mensual se perderán.')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-[10px] font-bold text-[--danger] hover:text-[--danger]/80 transition uppercase flex items-center gap-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                                Eliminar
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 @endif
                                             </div>
                                         @endforeach
