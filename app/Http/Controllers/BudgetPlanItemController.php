@@ -140,14 +140,21 @@ class BudgetPlanItemController extends Controller
 
     public function edit($itemId)
     {
-        $item = FinPlanItem::with(['plan', 'clasificadorItem', 'centroCosto'])->findOrFail($itemId);
+        $item = FinPlanItem::with(['plan', 'clasificadorItem', 'centroCosto', 'mensualizaciones'])->findOrFail($itemId);
 
         if ($item->plan->estado !== 'borrador') {
             return redirect()->route('programacion.planes.show', $item->plan_id)
                 ->with('error', 'Solo se pueden editar ítems de planes en estado borrador.');
         }
 
-        return view('programacion.items.edit', compact('item'));
+        // Aseguramos que existan los 12 meses para la vista
+        $mensualizaciones = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $m = $item->mensualizaciones->where('mes', $i)->first();
+            $mensualizaciones[$i] = $m ? $m->monto_planificado : 0;
+        }
+
+        return view('programacion.items.edit', compact('item', 'mensualizaciones'));
     }
 
     public function update(Request $request, $itemId)
@@ -161,27 +168,34 @@ class BudgetPlanItemController extends Controller
 
         $validated = $request->validate([
             'monto_anual' => 'required|numeric|min:0',
+            'meses' => 'required|array|size:12',
+            'meses.*' => 'required|numeric|min:0',
         ]);
 
-        $oldAmount = $item->monto_anual;
-        $newAmount = $validated['monto_anual'];
+        $totalMensual = array_sum($validated['meses']);
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($item, $oldAmount, $newAmount) {
-            $item->update(['monto_anual' => $newAmount]);
+        // Validación de cuadratura
+        if (abs($totalMensual - $validated['monto_anual']) > 1) { // Margen de $1 por redondeos
+            return redirect()->back()->withInput()
+                ->with('error', "La suma de los meses ($" . number_format($totalMensual, 0) . ") debe ser igual al monto anual ($" . number_format($validated['monto_anual'], 0) . ").");
+        }
 
-            // Si el monto cambia, invalidamos la distribución mensual previa
-            if (abs($oldAmount - $newAmount) > 0.01) {
-                $item->mensualizaciones()->delete();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($item, $validated) {
+            $item->update(['monto_anual' => $validated['monto_anual']]);
+
+            // Actualizamos distribuciones
+            $item->mensualizaciones()->delete();
+            foreach ($validated['meses'] as $mes => $monto) {
+                \App\Models\FinPlanMensual::create([
+                    'plan_item_id' => $item->id,
+                    'mes' => $mes,
+                    'monto_planificado' => $monto,
+                ]);
             }
         });
 
-        $message = 'Asignación actualizada exitosamente.';
-        if (abs($oldAmount - $newAmount) > 0.01) {
-            $message .= ' La distribución mensual fue eliminada al cambiar el monto total.';
-        }
-
         return redirect()->route('programacion.planes.show', $item->plan_id)
-            ->with('success', $message);
+            ->with('success', 'Asignación y distribución actualizada exitosamente.');
     }
 
     public function destroy($itemId)

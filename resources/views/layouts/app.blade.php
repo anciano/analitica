@@ -375,15 +375,29 @@
         </a>
 
         <nav class="sidebar-nav">
-            <div class="nav-group-label">General</div>
-            <a href="{{ route('finance.resumen') }}"
-                class="nav-item {{ request()->routeIs('finance.*') ? 'active' : '' }}">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M3 3v18h18"></path>
-                    <path d="M18 9l-6 6-4-4-5 5"></path>
-                </svg>
-                Finanzas
-            </a>
+            <div class="nav-group-label">Ejecución Presupuestaria</div>
+            <div class="mb-2">
+                <div class="nav-item has-submenu {{ request()->routeIs('finance.*') ? 'active open' : '' }}">
+                    <a href="javascript:void(0)" class="nav-link" onclick="toggleSubmenu(this)">
+                        <div class="flex items-center gap-3">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18 9l-6 6-4-4-5 5"></path>
+                            </svg>
+                            <span>Finanzas</span>
+                        </div>
+                        <svg class="submenu-arrow transition-transform duration-200" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    </a>
+                    <div class="nav-submenu">
+                        <a href="{{ route('finance.resumen') }}"
+                            class="nav-sub-item {{ request()->routeIs('finance.resumen') ? 'active' : '' }}">Dashboard</a>
+                        <a href="{{ route('finance.control') }}"
+                            class="nav-sub-item {{ request()->routeIs('finance.control') ? 'active' : '' }}">Control Presupuestario</a>
+                        <a href="{{ route('finance.tendencia') }}"
+                            class="nav-sub-item {{ request()->routeIs('finance.tendencia') ? 'active' : '' }}">Tendencia Ejecución</a>
+                    </div>
+                </div>
+            </div>
 
             <div class="nav-group-label">Gestión de Datos</div>
             <div class="mb-2">

@@ -87,13 +87,19 @@
                             $indent = ($cl->nivel - 1) * 2;
                             $isParent = !$node->is_leaf;
                         @endphp
-                        <tr class="hover:bg-gray-50/50 transition {{ $isParent ? 'bg-gray-50/30' : '' }}">
+                        <tr class="hover:bg-gray-50/50 transition {{ $isParent ? 'bg-gray-50/30' : '' }} tree-row" 
+                            data-id="{{ $cl->id }}" 
+                            data-parent="{{ $cl->parent_id ?? '' }}"
+                            style="display: table-row;">
                             <td class="px-6 py-4">
                                 <div class="flex items-start gap-2" style="padding-left: {{ $indent }}rem;">
                                     @if($isParent)
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-[--primary-blue]">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
+                                        <div class="toggle-container cursor-pointer p-1 -m-1" data-node-id="{{ $cl->id }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" 
+                                                class="mt-0.5 text-[--primary-blue] toggle-icon transition-transform duration-200 transform rotate-90">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                        </div>
                                     @endif
                                     <div>
                                         <div class="text-[13px] {{ $isParent ? 'font-bold text-[--text-main]' : 'font-semibold text-[--text-main]' }}">
@@ -197,4 +203,48 @@
             </table>
         </div>
     </div>
-@endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tableBody = document.querySelector('tbody');
+    
+    if (tableBody) {
+        tableBody.addEventListener('click', function(e) {
+            const toggle = e.target.closest('.toggle-container');
+            if (!toggle) return;
+
+            const nodeId = toggle.getAttribute('data-node-id');
+            const icon = toggle.querySelector('.toggle-icon');
+            const isExpanding = !icon.classList.contains('rotate-90');
+
+            // Toggle Icon state
+            icon.classList.toggle('rotate-90');
+
+            // Toggle children
+            toggleRecursive(nodeId, isExpanding);
+        });
+    }
+
+    function toggleRecursive(parentId, show) {
+        const children = document.querySelectorAll(`tr[data-parent="${parentId}"]`);
+        
+        children.forEach(child => {
+            const childId = child.getAttribute('data-id');
+            const childToggle = child.querySelector('.toggle-icon');
+            
+            if (show) {
+                child.style.display = 'table-row';
+                // Only show grandchildren if the child itself is expanded
+                if (childToggle && childToggle.classList.contains('rotate-90')) {
+                    toggleRecursive(childId, true);
+                }
+            } else {
+                child.style.display = 'none';
+                // Always hide descendants when parent is collapsed
+                toggleRecursive(childId, false);
+            }
+        });
+    }
+});
+</script>
+@endsection

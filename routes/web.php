@@ -46,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     // Finance Management Views
     Route::get('/finanzas/resumen', [\App\Http\Controllers\FinanceController::class, 'resumen'])->name('finance.resumen');
     Route::get('/finanzas/tendencia', [\App\Http\Controllers\FinanceController::class, 'tendencia'])->name('finance.tendencia');
+    Route::get('/finanzas/control', [\App\Http\Controllers\BudgetControlController::class, 'index'])->name('finance.control');
     Route::get('/finanzas/powerbi', [\App\Http\Controllers\FinanceController::class, 'powerbi'])->name('finance.powerbi');
 
     // Budget Programming
